@@ -1,0 +1,8 @@
+atproto==0.0.58
+Flask~=2.3.2
+python-dotenv~=1.0.0
+pymysql
+flask-sqlalchemy
+python-dateutil
+requests
+flask-login
