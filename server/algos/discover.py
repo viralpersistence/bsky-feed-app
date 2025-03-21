@@ -113,7 +113,7 @@ def handler(cursor: Optional[str], limit: int, requester_did: str) -> dict:
 
     #posts = Post.select().where(where_stmt).order_by(Post.cid.desc()).order_by(Post.indexed_at.desc()).limit(limit)
 
-    posts = db.session.scalars( sa.select(Post).where(where_stmt).order_by(Post.cid.desc()).order_by(Post.indexed_at.desc()).limit(limit) ).all()
+    posts = db.session.scalars( sa.select(Post).where(where_stmt).order_by(Post.indexed_at.desc()).order_by(Post.cid.desc()).limit(limit) ).all()
 
 
     feed = [{'post': post.uri} for post in posts]
