@@ -1,8 +1,8 @@
 #from server.database import session, FeedUser, UserFollows, Post
 #from server.client import bsky_client
-import peewee
 import requests
 import time
+import sqlalchemy as sa
 
 from server import db
 from server.models import FeedUser, UserFollows, UserList
@@ -12,7 +12,7 @@ from server.logger import logger
 def get_or_add_user(requester_did):
     feed_user = db.session.scalar(sa.select(FeedUser).where(FeedUser.did == requester_did))
 
-    if user:
+    if feed_user:
         return feed_user
     else:
         try:
@@ -52,4 +52,3 @@ def get_or_add_user(requester_did):
             feed_user = db.session.scalar(sa.select(FeedUser).where(FeedUser.did == requester_did))
 
     return feed_user
-                

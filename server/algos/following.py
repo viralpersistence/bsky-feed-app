@@ -7,6 +7,7 @@ from server import config
 from server.logger import logger
 #from server.database import Post, UserFollows
 from server.models import Post, UserFollows
+from server import db
 import sqlalchemy as sa
 from sqlalchemy import and_, or_
 
@@ -72,7 +73,7 @@ def handler(cursor: Optional[str], limit: int, requester_did: str) -> dict:
             Post.reply_root == None,
         )
     else:
-        where_stmt = (
+        where_stmt = and_(
             Post.link_only == 0,
             Post.userlist_only == 0,
             Post.subfeed_only == None,

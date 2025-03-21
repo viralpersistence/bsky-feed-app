@@ -10,6 +10,7 @@ from server.utils import get_or_add_user
 from server.models import Post, UserFollows
 import sqlalchemy as sa
 from sqlalchemy import and_, or_
+from server import db
 
 uri = config.DISCOVER_FEED_URI
 CURSOR_EOF = 'eof'
@@ -73,7 +74,7 @@ def handler(cursor: Optional[str], limit: int, requester_did: str) -> dict:
             Post.reply_root == None,
         )
     else:
-        where_stmt = (
+        where_stmt = and_(
             Post.discoverable == 1,
             Post.did.not_in(userfollows_dids),
         )

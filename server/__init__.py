@@ -12,4 +12,4 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('MYSQL_CONN_STRING')
 
 db = SQLAlchemy(app)
 
-from server import routes, database
+from server import routes, models

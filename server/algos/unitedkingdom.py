@@ -1,23 +1,22 @@
 from datetime import datetime
 from typing import Optional
 
-from server import config
+from server import config, db
 from server.logger import logger
 from server.utils import get_or_add_user
 
-import sqlalchemy
+import sqlalchemy as sa
 from sqlalchemy import or_, and_
-from server.database import Post, Subfeed, SubfeedMember
+from server.models import Post, Subfeed, SubfeedMember
 
 uri = config.MUTUALAID_FEED_URI
 CURSOR_EOF = 'eof'
 
 feed_name = 'unitedkingdom'
 
-subfeed = Subfeed.get(Subfeed.feed_name == feed_name)
-subfeed_id = subfeed.id
-
 def handler(cursor: Optional[str], limit: int, requester_did: str) -> dict:
+    subfeed = db.session.scalar(sa.select(Subfeed).where(Subfeed.feed_name == feed_name))
+    subfeed_id = subfeed.id
 
     user = get_or_add_user(requester_did)
 

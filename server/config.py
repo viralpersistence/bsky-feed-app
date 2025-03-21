@@ -10,15 +10,10 @@ load_dotenv()
 SERVICE_DID = os.environ.get('SERVICE_DID')
 HOSTNAME = os.environ.get('HOSTNAME')
 FLASK_RUN_FROM_CLI = os.environ.get('FLASK_RUN_FROM_CLI')
-#MYSQL_CONN_STRING = os.environ.get('MYSQL_CONN_STRING')
+MYSQL_CONN_STRING = os.environ.get('MYSQL_CONN_STRING')
 HANDLE = os.environ.get('HANDLE')
 PASSWORD = os.environ.get('PASSWORD')
 
-DB_NAME = os.environ.get('DB_NAME')
-DB_USER = os.environ.get('DB_USER')
-DB_PASSWORD = os.environ.get('DB_PASSWORD')
-DB_HOST = os.environ.get('DB_HOST')
-DB_PORT = os.environ.get('DB_PORT')
 
 if FLASK_RUN_FROM_CLI:
     logger.setLevel(logging.DEBUG)
@@ -26,11 +21,8 @@ if FLASK_RUN_FROM_CLI:
 if not HOSTNAME:
     raise RuntimeError('You should set "HOSTNAME" environment variable first.')
 
-#if not MYSQL_CONN_STRING:
-#    raise RuntimeError('You should set "MYSQL_CONN_STRING" environment variable first.')
-
-if not (DB_NAME and DB_USER and DB_PASSWORD and DB_HOST and DB_PORT):
-    raise RuntimeError('You should set all database environment variables first.')
+if not MYSQL_CONN_STRING:
+    raise RuntimeError('You should set "MYSQL_CONN_STRING" environment variable first.')
 
 if not HANDLE:
     raise RuntimeError('You should set "HANDLE" environment variable first.')
