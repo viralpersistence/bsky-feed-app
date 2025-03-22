@@ -51,8 +51,9 @@ def get_or_add_user(requester_did):
                 else:
                     more_follows = False
 
-            db.session.bulk_save_objects(all_follows)
-            db.session.commit()
+            if all_follows:
+                db.session.bulk_save_objects(all_follows)
+                db.session.commit()
         except Exception as e:
             logger.info(e)
             #db.session.rollback()
