@@ -37,12 +37,13 @@ def get_or_add_user(requester_did):
                 ).json()
 
 
-                follows = [{'feeduser_id': feed_user.id,'follows_did': elem['value']['subject'], 'uri': elem['uri']} for elem in follows_batch['records']]
-                #follows = [UserFollows(feeduser_id=feed_user.id, follows_did=elem['value']['subject'], uri=elem['uri']) for elem in follows_batch['records']]
+                #follows = [{'feeduser_id': feed_user.id,'follows_did': elem['value']['subject'], 'uri': elem['uri']} for elem in follows_batch['records']]
+                follows = [UserFollows(feeduser_id=feed_user.id, follows_did=elem['value']['subject'], uri=elem['uri']) for elem in follows_batch['records']]
 
 
                 if follows:
-                    sa.insert(UserFollows).values(follows)
+                    #sa.insert(UserFollows).values(follows)
+                    db.session.add_all(follows)
                     db.session.commit()
                     #all_follows += follows
 

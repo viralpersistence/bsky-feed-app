@@ -7,20 +7,24 @@ from server.utils import get_or_add_user
 
 import sqlalchemy as sa
 from sqlalchemy import or_, and_
-from server.models import Post, Subfeed, SubfeedMember
+from server.models import Post, Subfeed, SubfeedMember, FeedUser
 
-uri = config.MUTUALAID_FEED_URI
+uri = config.UNITEDKINGDOM_FEED_URI
 CURSOR_EOF = 'eof'
 
 feed_name = 'unitedkingdom'
 
 def handler(cursor: Optional[str], limit: int, requester_did: str) -> dict:
+
     subfeed = db.session.scalar(sa.select(Subfeed).where(Subfeed.feed_name == feed_name))
     subfeed_id = subfeed.id
 
     user = get_or_add_user(requester_did)
 
-    member_ids = [member.feeduser.did for member in subfeed.members]
+    sf_member_ids = [row.feeduser_id for row in db.session.scalars(sa.select(SubfeedMember).where(SubfeedMember.subfeed_id == subfeed_id)).all()]
+
+    member_ids = [row.did for row in db.session.scalars(sa.select(FeedUser).where(FeedUser.id.in_(sf_member_ids))).all()] #[member.feeduser.did for member in subfeed.members]
+
 
     '''
     if user.replies_off:
@@ -47,7 +51,7 @@ def handler(cursor: Optional[str], limit: int, requester_did: str) -> dict:
             Post.userlist_only == 0,
             Post.link_only == 0,
             Post.did.in_(member_ids),
-            Post.subfeed_only.in_([None, subfeed_id]),
+            or_(Post.subfeed_only == None, Post.subfeed_only == subfeed_id),
             Post.reply_parent == None,
             Post.reply_root == None,
         )
@@ -57,8 +61,10 @@ def handler(cursor: Optional[str], limit: int, requester_did: str) -> dict:
             Post.userlist_only == 0,
             Post.link_only == 0,
             Post.did.in_(member_ids),
-            Post.subfeed_only.in_([None, subfeed_id]),
+            or_(Post.subfeed_only == None, Post.subfeed_only == subfeed_id),
         )
+
+    logger.info(where_stmt)
 
     if cursor:
         if cursor == CURSOR_EOF:

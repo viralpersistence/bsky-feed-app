@@ -54,8 +54,10 @@ def describe_feed_generator():
 @app.route('/xrpc/app.bsky.feed.getFeedSkeleton', methods=['GET'])
 def get_feed_skeleton():
     feed = request.args.get('feed', default=None, type=str)
+    logger.info(f"\n\n\n\n\n{feed}\n")
     algo = algos.get(feed)
     if not algo:
+        logger.info(f"\n\n\n\n\nthis happens\n")
         return 'Unsupported algorithm', 400
 
     # Example of how to check auth if giving user-specific results:
