@@ -57,6 +57,7 @@ def get_or_add_user(requester_did):
         except Exception as e:
             logger.info(e)
             #db.session.rollback()
-            feed_user = db.session.scalar(sa.select(FeedUser).where(FeedUser.did == requester_did))
+            #feed_user = db.session.scalar(sa.select(FeedUser).where(FeedUser.did == requester_did))
+            raise e
 
     return feed_user
