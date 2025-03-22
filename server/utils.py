@@ -37,23 +37,23 @@ def get_or_add_user(requester_did):
                 ).json()
 
 
-                #follows = [{'feeduser_id': feed_user.id,'follows_did': elem['value']['subject'], 'uri': elem['uri']} for elem in follows_batch['records']]
-                follows = [UserFollows(feeduser_id=feed_user.id, follows_did=elem['value']['subject'], uri=elem['uri']) for elem in follows_batch['records']]
+                follows = [{'feeduser_id': feed_user.id,'follows_did': elem['value']['subject'], 'uri': elem['uri']} for elem in follows_batch['records']]
+                #follows = [UserFollows(feeduser_id=feed_user.id, follows_did=elem['value']['subject'], uri=elem['uri']) for elem in follows_batch['records']]
 
 
                 if follows:
-                    #sa.insert(UserFollows).values(follows)
-                    #db.session.commit()
-                    all_follows += follows
+                    sa.insert(UserFollows).values(follows)
+                    db.session.commit()
+                    #all_follows += follows
 
                 if 'cursor' in follows_batch:
                     cursor = follows_batch['cursor']
                 else:
                     more_follows = False
 
-            if all_follows:
-                db.session.bulk_save_objects(all_follows)
-                db.session.commit()
+            #if all_follows:
+            #    db.session.bulk_save_objects(all_follows)
+            #    db.session.commit()
         except Exception as e:
             logger.info(e)
             #db.session.rollback()
