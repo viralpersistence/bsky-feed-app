@@ -16,39 +16,46 @@ def get_or_add_user(requester_did):
         return feed_user
     else:
         try:
-            with db.session.begin():
-                feed_user = FeedUser(did=requester_did)
-                db.session.add(feed_user)
-                db.session.commit()
+            all_follows = []
+            #with db.session.begin():
+            feed_user = FeedUser(did=requester_did)
+            db.session.add(feed_user)
+            db.session.commit()
 
-                more_follows = True
-                cursor = ''
+            more_follows = True
+            cursor = ''
 
-                while more_follows:
-                    follows_batch = requests.get(
-                        "https://bsky.social/xrpc/com.atproto.repo.listRecords",
-                        params={
-                            "repo": requester_did,
-                            "collection": "app.bsky.graph.follow",
-                            "cursor": cursor,
-                            "limit": 100,
-                        },
-                    ).json()
+            while more_follows:
+                follows_batch = requests.get(
+                    "https://bsky.social/xrpc/com.atproto.repo.listRecords",
+                    params={
+                        "repo": requester_did,
+                        "collection": "app.bsky.graph.follow",
+                        "cursor": cursor,
+                        "limit": 100,
+                    },
+                ).json()
 
 
-                    follows = [{'feeduser_id': feed_user.id,'follows_did': elem['value']['subject'], 'uri': elem['uri']} for elem in follows_batch['records']]
+                #follows = [{'feeduser_id': feed_user.id,'follows_did': elem['value']['subject'], 'uri': elem['uri']} for elem in follows_batch['records']]
+                follows = [UserFollows(feeduser_id=feed_user.id, follows_did=elem['value']['subject'], uri=elem['uri']) for elem in follows_batch['records']]
 
-                    if follows:
-                        sa.insert(UserFollows).values(follows)
-                        db.session.commit()
 
-                    if 'cursor' in follows_batch:
-                        cursor = follows_batch['cursor']
-                    else:
-                        more_follows = False
+                if follows:
+                    #sa.insert(UserFollows).values(follows)
+                    #db.session.commit()
+                    all_follows += follows
+
+                if 'cursor' in follows_batch:
+                    cursor = follows_batch['cursor']
+                else:
+                    more_follows = False
+
+            db.session.bulk_save_objects(all_follows)
+            db.session.commit()
         except Exception as e:
             logger.info(e)
-            db.session.rollback()
+            #db.session.rollback()
             feed_user = db.session.scalar(sa.select(FeedUser).where(FeedUser.did == requester_did))
 
     return feed_user
