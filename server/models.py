@@ -47,6 +47,7 @@ class UserFollows(db.Model):
     follows_did: so.Mapped[str] = so.mapped_column(sa.String(255), nullable=False)
     follows_handle: so.Mapped[str] = so.mapped_column(sa.String(255))
     follows_disp_name: so.Mapped[str] = so.mapped_column(sa.String(255))
+    uri: so.Mapped[str] = so.mapped_column(sa.String(255))
 
     feedusers: so.Mapped[List["FeedUser"]] = so.relationship(back_populates="userfollows")
 
